@@ -10,6 +10,8 @@ import com.pato_palavra.repositories.WordRepository;
 import com.pato_palavra.repositories.UserWordRepository;
 import com.pato_palavra.dtos.WordRegisterResponseDTO;
 
+import java.util.Optional;
+
 @Service
 public class WordService {
     
@@ -24,31 +26,29 @@ public class WordService {
     
     public WordRegisterResponseDTO registerWord(String nickname, String password, String word) {
 
-        UserEntity user = userRepository.findByNickname(nickname);
+        Optional<UserEntity> user = userRepository.findByNickname(nickname);
         
-        if (user == null) {
-            return new WordRegisterResponseDTO(false, "User not found");
+        if (user.isEmpty()) {
+            return new WordRegisterResponseDTO(true, "User not found");
         }
-        if (!user.getPassword().equals(password)) {
-            return new WordRegisterResponseDTO(false, "Invalid credentials");
-        }
-        if (user.getTryAttempts() <= 0) {
-            return new WordRegisterResponseDTO(false, "No attempts left");
+
+        if (user.get().getTryAttempts() <= 0) {
+            return new WordRegisterResponseDTO(true, "No attempts left");
         }
 
         WordEntity wordEntity = wordRepository.findByWord(word);
         if (wordEntity == null) {
-            decreaseUserAttempt(user);
-            return new WordRegisterResponseDTO(false, "Word not found");
+            decreaseUserAttempt(user.get());
+            return new WordRegisterResponseDTO(true, "Word not found");
         }
         
-        Long userId = user.getId();
+        Long userId = user.get().getId();
         String wordStr = wordEntity.getWord();
-        Long idValue = user.getTryAttempts().longValue();
+        Long idValue = user.get().getTryAttempts().longValue();
 
         UserWordEntity existingAttemptEntry = userWordRepository.findByUserIdAndWordWordAndId(userId, wordStr, idValue);
         if (existingAttemptEntry != null) {
-            decreaseUserAttempt(user);
+            decreaseUserAttempt(user.get());
             return new WordRegisterResponseDTO(false, "Word already tried in this attempt");
         }
         
@@ -60,7 +60,7 @@ public class WordService {
         }*/
 
         UserWordEntity userWord = new UserWordEntity();
-        userWord.setUser(user);
+        userWord.setUser(user.get());
         userWord.setWord(wordEntity);
         userWord.setId(idValue);
         userWordRepository.save(userWord);

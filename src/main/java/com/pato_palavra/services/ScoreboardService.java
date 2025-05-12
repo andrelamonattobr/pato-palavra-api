@@ -10,6 +10,7 @@ import com.pato_palavra.dtos.ScoreboardResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ScoreboardService {
@@ -37,14 +38,10 @@ public class ScoreboardService {
     
     public ScoreboardResponseDTO getPersonalScoreboard(String nickname, String password) {
         // Validate user credentials
-        UserEntity user = userRepository.findByNickname(nickname);
+        Optional<UserEntity> user = userRepository.findByNickname(nickname);
         
-        if (user == null) {
-            return new ScoreboardResponseDTO(false, "User not found", null);
-        }
-        
-        if (!user.getPassword().equals(password)) {
-            return new ScoreboardResponseDTO(false, "Invalid credentials", null);
+        if (user.isEmpty()) {
+            return new ScoreboardResponseDTO(true, "User not found", null);
         }
         
         List<Object[]> results = userWordRepository.findUserAttemptsByNickname(nickname);

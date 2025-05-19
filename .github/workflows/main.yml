@@ -1,9 +1,10 @@
 name: Build a JAR in spring boot using springboot
 on:
   push:
-    branches:
-      - master
-
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:

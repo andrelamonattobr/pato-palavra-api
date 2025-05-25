@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "user_words")
-@IdClass(UserWordId.class)
+@IdClass(UserWordIdClass.class)
 public class UserWordEntity {
     @Id
     @ManyToOne
@@ -15,10 +15,6 @@ public class UserWordEntity {
     @ManyToOne
     @JoinColumn(name = "word", nullable = false)
     private WordEntity word;
-
-    @Id
-    @Column(nullable = false)
-    private Long id;
 
     public UserEntity getUser() {
         return user;
@@ -34,14 +30,6 @@ public class UserWordEntity {
 
     public void setWord(WordEntity word) {
         this.word = word;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
 }

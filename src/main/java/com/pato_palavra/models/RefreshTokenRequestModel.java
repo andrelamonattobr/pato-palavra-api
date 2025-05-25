@@ -1,12 +1,12 @@
-package com.pato_palavra.dtos;
+package com.pato_palavra.models;
 
-public class RefreshTokenRequest {
+public class RefreshTokenRequestModel {
     private String refreshToken;
 
-    public RefreshTokenRequest() {
+    public RefreshTokenRequestModel() {
     }
 
-    public RefreshTokenRequest(String refreshToken) {
+    public RefreshTokenRequestModel(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
@@ -17,4 +17,5 @@ public class RefreshTokenRequest {
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
-} 
+
+}

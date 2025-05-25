@@ -1,13 +1,13 @@
-package com.pato_palavra.dtos;
+package com.pato_palavra.models;
 
-public class RegisterRequest {
+public class AuthRequestModel {
     private String username;
     private String password;
 
-    public RegisterRequest() {
+    public AuthRequestModel() {
     }
 
-    public RegisterRequest(String username, String password) {
+    public AuthRequestModel(String username, String password) {
         this.username = username;
         this.password = password;
     }
@@ -27,4 +27,5 @@ public class RegisterRequest {
     public void setPassword(String password) {
         this.password = password;
     }
-} 
+
+}

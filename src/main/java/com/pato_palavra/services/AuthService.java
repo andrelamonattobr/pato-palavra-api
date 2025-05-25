@@ -1,9 +1,6 @@
 package com.pato_palavra.services;
 
 import com.pato_palavra.dtos.AuthRequest;
-import com.pato_palavra.dtos.AuthResponse;
-import com.pato_palavra.dtos.RefreshTokenRequest;
-import com.pato_palavra.dtos.RegisterRequest;
 import com.pato_palavra.entities.UserEntity;
 import com.pato_palavra.repositories.UserRepository;
 import com.pato_palavra.security.JwtService;

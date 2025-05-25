@@ -1,13 +1,12 @@
-package com.pato_palavra.dtos;
+package com.pato_palavra.models;
 
-public class AuthResponse {
+public class AuthResponseModel {
     private String token;
     private String refreshToken;
 
-    public AuthResponse() {
-    }
+    public AuthResponseModel() { }
 
-    public AuthResponse(String token, String refreshToken) {
+    public AuthResponseModel(String token, String refreshToken) {
         this.token = token;
         this.refreshToken = refreshToken;
     }
@@ -27,4 +26,5 @@ public class AuthResponse {
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
-} 
+
+}

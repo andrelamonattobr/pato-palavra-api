@@ -25,10 +25,11 @@ public class WordController {
             requestDTO.getWord()
         );
         
-        if (response.isSuccess()) {
+        if (response.isSuccess())
             return ResponseEntity.ok(response);
-        } else {
+        else
             return ResponseEntity.badRequest().body(response);
-        }
+
     }
-} 
+
+}

@@ -59,9 +59,11 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
             throw new BadCredentialsException("Invalid username or password");
 
+        /* I thing its not necessary this authentication
         System.out.println("Before authenticationManager.authenticate()");
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), null));
         System.out.println("After authenticationManager.authenticate()");
+        */
 
         return new AuthResponseModel(
                 jwtService.generateToken(user.getUsername()),

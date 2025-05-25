@@ -24,17 +24,15 @@ public class WordService {
     @Autowired
     private UserWordRepository userWordRepository;
     
-    public WordRegisterResponseDTO registerWord(String nickname, String password, String word) {
+    public WordRegisterResponseDTO registerWord(String username, String password, String word) {
 
-        Optional<UserEntity> user = userRepository.findByNickname(nickname);
+        Optional<UserEntity> user = userRepository.findByUsername(username);
         
-        if (user.isEmpty()) {
+        if (user.isEmpty())
             return new WordRegisterResponseDTO(true, "User not found");
-        }
 
-        if (user.get().getTryAttempts() <= 0) {
+        if (user.get().getTryAttempts() <= 0)
             return new WordRegisterResponseDTO(true, "No attempts left");
-        }
 
         WordEntity wordEntity = wordRepository.findByWord(word);
         if (wordEntity == null) {
@@ -44,25 +42,16 @@ public class WordService {
         
         Long userId = user.get().getId();
         String wordStr = wordEntity.getWord();
-        Long idValue = user.get().getTryAttempts().longValue();
 
-        UserWordEntity existingAttemptEntry = userWordRepository.findByUserIdAndWordWordAndId(userId, wordStr, idValue);
+        UserWordEntity existingAttemptEntry = userWordRepository.findByUserIdAndWordWordAndId(userId, wordStr);
         if (existingAttemptEntry != null) {
             decreaseUserAttempt(user.get());
             return new WordRegisterResponseDTO(false, "Word already tried in this attempt");
         }
-        
-        /*
-        UserWordEntity existingEntry = userWordRepository.findByUserIdAndWordWord(userId, wordStr);
-        
-        if (existingEntry != null) {
-            return new WordRegisterResponseDTO(false, "Word already registered for this user");
-        }*/
 
         UserWordEntity userWord = new UserWordEntity();
         userWord.setUser(user.get());
         userWord.setWord(wordEntity);
-        userWord.setId(idValue);
         userWordRepository.save(userWord);
         return new WordRegisterResponseDTO(true, "Word registered successfully");
 
@@ -73,4 +62,4 @@ public class WordService {
         userRepository.save(user);
     }
 
-} 
+}

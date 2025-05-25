@@ -1,10 +1,10 @@
 package com.pato_palavra.controllers;
 
+import com.pato_palavra.models.ScoreboardResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.pato_palavra.dtos.PersonalScoreboardRequestDTO;
-import com.pato_palavra.dtos.ScoreboardResponseDTO;
 import com.pato_palavra.services.ScoreboardService;
 
 @RestController
@@ -15,22 +15,21 @@ public class ScoreboardController {
     private ScoreboardService scoreboardService;
     
     @GetMapping("/general")
-    public ResponseEntity<ScoreboardResponseDTO> getGeneralScoreboard() {
-        ScoreboardResponseDTO response = scoreboardService.getGeneralScoreboard();
+    public ResponseEntity<ScoreboardResponseModel> getGeneralScoreboard() {
+        ScoreboardResponseModel response = scoreboardService.getGeneralScoreboard();
         return ResponseEntity.ok(response);
     }
     
     @PostMapping("/personal")
-    public ResponseEntity<ScoreboardResponseDTO> getPersonalScoreboard(@RequestBody PersonalScoreboardRequestDTO requestDTO) {
-        ScoreboardResponseDTO response = scoreboardService.getPersonalScoreboard(
-            requestDTO.getNickname(),
-            requestDTO.getPassword()
-        );
+    public ResponseEntity<ScoreboardResponseModel> getPersonalScoreboard(@RequestBody PersonalScoreboardRequestDTO requestDTO) {
+        ScoreboardResponseModel response = scoreboardService.getPersonalScoreboard(requestDTO.getNickname());
         
         if (response.isSuccess()) {
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.badRequest().body(response);
         }
+
     }
-} 
+
+}

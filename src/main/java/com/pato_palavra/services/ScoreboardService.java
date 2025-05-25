@@ -1,12 +1,12 @@
 package com.pato_palavra.services;
 
+import com.pato_palavra.models.ScoreModel;
+import com.pato_palavra.models.ScoreboardResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.pato_palavra.repositories.UserWordRepository;
 import com.pato_palavra.repositories.UserRepository;
 import com.pato_palavra.entities.UserEntity;
-import com.pato_palavra.dtos.ScoreboardEntryDTO;
-import com.pato_palavra.dtos.ScoreboardResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,40 +21,40 @@ public class ScoreboardService {
     @Autowired
     private UserRepository userRepository;
     
-    public ScoreboardResponseDTO getGeneralScoreboard() {
+    public ScoreboardResponseModel getGeneralScoreboard() {
         List<Object[]> results = userWordRepository.findTop15ByPointsDesc();
-        List<ScoreboardEntryDTO> entries = new ArrayList<>();
+        List<ScoreModel> scores = new ArrayList<>();
         
         for (Object[] result : results) {
-            String nickname = (String) result[0];
-            Long id = (Long) result[1];
-            Long count = (Long) result[2];
-            
-            entries.add(new ScoreboardEntryDTO(nickname, id, count));
+            scores.add(new ScoreModel(
+                    (String) result[0],
+                    (Long) result[1],
+                    (Long) result[2]
+            ));
         }
         
-        return new ScoreboardResponseDTO(true, "General scoreboard retrieved successfully", entries);
+        return new ScoreboardResponseModel(true, "General scoreboard retrieved successfully", scores);
     }
     
-    public ScoreboardResponseDTO getPersonalScoreboard(String nickname, String password) {
-        // Validate user credentials
-        Optional<UserEntity> user = userRepository.findByNickname(nickname);
+    public ScoreboardResponseModel getPersonalScoreboard(String username) {
+        Optional<UserEntity> user = userRepository.findByUsername(username);
         
-        if (user.isEmpty()) {
-            return new ScoreboardResponseDTO(true, "User not found", null);
-        }
+        if (user.isEmpty())
+            return new ScoreboardResponseModel(true, "User not found", null);
         
-        List<Object[]> results = userWordRepository.findUserAttemptsByNickname(nickname);
-        List<ScoreboardEntryDTO> entries = new ArrayList<>();
+        List<Object[]> results = userWordRepository.findUserAttemptsByNickname(username);
+        List<ScoreModel> scores = new ArrayList<>();
         
         for (Object[] result : results) {
-            String userNickname = (String) result[0];
-            Long id = (Long) result[1];
-            Long count = (Long) result[2];
-            
-            entries.add(new ScoreboardEntryDTO(userNickname, id, count));
+            scores.add(new ScoreModel(
+                    (String) result[0],
+                    (Long) result[1],
+                    (Long) result[2]
+            ));
         }
         
-        return new ScoreboardResponseDTO(true, "Personal scoreboard retrieved successfully", entries);
+        return new ScoreboardResponseModel(true, "Personal scoreboard retrieved successfully", scores);
+
     }
-} 
+
+}

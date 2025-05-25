@@ -52,19 +52,16 @@ public class AuthService {
     }
 
     public AuthResponseModel authenticate(AuthRequestModel request) {
-        System.out.println("Before authenticationManager.authenticate()");
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword()
-        ));
-        System.out.println("After authenticationManager.authenticate()");
-
         UserEntity user = userRepository.findByUsername(request.getUsername()).orElseThrow(() ->
                 new BadCredentialsException("Invalid username or password")
         );
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
             throw new BadCredentialsException("Invalid username or password");
+
+        System.out.println("Before authenticationManager.authenticate()");
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), null));
+        System.out.println("After authenticationManager.authenticate()");
 
         return new AuthResponseModel(
                 jwtService.generateToken(user.getUsername()),

@@ -1,5 +1,6 @@
 package com.pato_palavra.services;
 
+import com.pato_palavra.models.WordRegisterResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,7 +17,6 @@ import com.pato_palavra.entities.UserWordEntity;
 import com.pato_palavra.repositories.UserRepository;
 import com.pato_palavra.repositories.WordRepository;
 import com.pato_palavra.repositories.UserWordRepository;
-import com.pato_palavra.dtos.WordRegisterResponseDTO;
 
 public class WordServiceTest {
 
@@ -41,13 +41,12 @@ public class WordServiceTest {
     public void testRegisterWord_UserNotFound() {
         // Arrange
         String username = "nonExistentUser";
-        String password = "password";
         String word = "test";
         
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
         
         // Act
-        WordRegisterResponseDTO response = wordService.registerWord(username, password, word);
+        WordRegisterResponseModel response = wordService.registerWord(username, word);
         
         // Assert
         assertTrue(response.isSuccess());
@@ -73,7 +72,7 @@ public class WordServiceTest {
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         
         // Act
-        WordRegisterResponseDTO response = wordService.registerWord(username, password, word);
+        WordRegisterResponseModel response = wordService.registerWord(username, word);
         
         // Assert
         assertTrue(response.isSuccess());
@@ -100,7 +99,7 @@ public class WordServiceTest {
         when(wordRepository.findByWord(word)).thenReturn(null);
         
         // Act
-        WordRegisterResponseDTO response = wordService.registerWord(username, password, word);
+        WordRegisterResponseModel response = wordService.registerWord(username, word);
         
         // Assert
         assertTrue(response.isSuccess());
@@ -137,7 +136,7 @@ public class WordServiceTest {
         when(userWordRepository.findByUserIdAndWordWordAndId(1L, word)).thenReturn(existingEntry);
         
         // Act
-        WordRegisterResponseDTO response = wordService.registerWord(username, password, word);
+        WordRegisterResponseModel response = wordService.registerWord(username, word);
         
         // Assert
         assertFalse(response.isSuccess());
@@ -170,7 +169,7 @@ public class WordServiceTest {
         when(userWordRepository.findByUserIdAndWordWordAndId(1L, word)).thenReturn(null);
         
         // Act
-        WordRegisterResponseDTO response = wordService.registerWord(username, password, word);
+        WordRegisterResponseModel response = wordService.registerWord(username, word);
         
         // Assert
         assertTrue(response.isSuccess());

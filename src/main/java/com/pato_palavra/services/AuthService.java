@@ -1,88 +1,94 @@
 package com.pato_palavra.services;
 
-import com.pato_palavra.dtos.AuthRequest;
-import com.pato_palavra.entities.UserEntity;
+import com.pato_palavra.models.AuthRequestModel;
+import com.pato_palavra.models.AuthResponseModel;
+import com.pato_palavra.models.RefreshTokenRequestModel;
 import com.pato_palavra.repositories.UserRepository;
+import com.pato_palavra.entities.UserEntity;
+
 import com.pato_palavra.security.JwtService;
+
 import io.jsonwebtoken.ExpiredJwtException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLOutput;
+
 @Service
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    @Autowired
+    private UserRepository userRepository;
 
-    public AuthService(
-            UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            JwtService jwtService,
-            AuthenticationManager authenticationManager
-    ) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    public AuthResponse register(RegisterRequest request) {
-        if (userRepository.findByNickname(request.getUsername()).isPresent()) {
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    public AuthResponseModel register(AuthRequestModel request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent())
             throw new RuntimeException("Username already exists");
-        }
-        
-        var user = new UserEntity();
-        user.setNickname(request.getUsername());
+
+        UserEntity user = new UserEntity();
+        user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setTryAttempts(3);
 
         userRepository.save(user);
 
-        var jwtToken = jwtService.generateToken(user.getNickname());
-        var refreshToken = jwtService.generateRefreshToken(user.getNickname());
-        
-        return new AuthResponse(jwtToken, refreshToken);
-    }
-
-    public AuthResponse authenticate(AuthRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
+        return new AuthResponseModel(
+                jwtService.generateToken(user.getUsername()),
+                jwtService.generateRefreshToken(user.getUsername())
         );
 
-        var user = userRepository.findByNickname(request.getUsername())
-                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
-
-        var jwtToken = jwtService.generateToken(user.getNickname());
-        var refreshToken = jwtService.generateRefreshToken(user.getNickname());
-        
-        return new AuthResponse(jwtToken, refreshToken);
     }
 
-    public AuthResponse refreshToken(RefreshTokenRequest request) {
-        String refreshToken = request.getRefreshToken();
-        try {
-            String username = jwtService.extractUsername(refreshToken);
-            
-            var user = userRepository.findByNickname(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            
-            if (jwtService.isTokenValid(refreshToken, user.getNickname())) {
-                var accessToken = jwtService.generateToken(user.getNickname());
-                
-                return new AuthResponse(accessToken, refreshToken);
-            }
-        } catch (ExpiredJwtException ex) {
-            throw new RuntimeException("Refresh token expired");
+    public AuthResponseModel authenticate(AuthRequestModel request) {
+        System.out.println("Before authenticationManager.authenticate()");
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                request.getPassword()
+        ));
+        System.out.println("After authenticationManager.authenticate()");
+
+        UserEntity user = userRepository.findByUsername(request.getUsername()).orElseThrow(() ->
+                new BadCredentialsException("Invalid username or password")
+        );
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
+            throw new BadCredentialsException("Invalid username or password");
+
+        return new AuthResponseModel(
+                jwtService.generateToken(user.getUsername()),
+                jwtService.generateRefreshToken(user.getUsername())
+        );
+
+    }
+
+    public AuthResponseModel refreshToken(RefreshTokenRequestModel request) {
+        UserEntity user = userRepository.findByUsername(
+                jwtService.extractUsername(request.getRefreshToken())
+        ).orElseThrow(() ->
+                new RuntimeException("Invalid refreshing token")
+        );
+
+        if (jwtService.isTokenValid(request.getRefreshToken(), user.getUsername())) {
+            return new AuthResponseModel(
+                    jwtService.generateToken(user.getUsername()),
+                    jwtService.generateRefreshToken(user.getUsername())
+            );
         }
-        
-        throw new RuntimeException("Invalid refresh token");
+
+        throw new RuntimeException("Invalid refreshing token");
+
     }
+
 } 

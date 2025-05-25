@@ -29,7 +29,7 @@ public interface UserWordRepository extends JpaRepository<UserWordEntity, Long> 
            "ORDER BY count DESC")
     List<Object[]> findUserAttemptsByNickname(String nickname);
     
-    @Query("SELECT uw FROM UserWordEntity uw WHERE uw.user.id = ?1 AND uw.word.word = ?2 AND uw.id = ?3")
-    UserWordEntity findByUserIdAndWordWordAndId(Long userId, String word, Long id);
+    @Query("SELECT uw FROM UserWordEntity uw WHERE uw.user.id = ?1 AND uw.word.word = ?2")
+    UserWordEntity findByUserIdAndWordWordAndId(Long userId, String word);
 
 }

@@ -40,19 +40,19 @@ public class WordServiceTest {
     @Test
     public void testRegisterWord_UserNotFound() {
         // Arrange
-        String nickname = "nonExistentUser";
+        String username = "nonExistentUser";
         String password = "password";
         String word = "test";
         
-        when(userRepository.findByNickname(nickname)).thenReturn(Optional.empty());
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
         
         // Act
-        WordRegisterResponseDTO response = wordService.registerWord(nickname, password, word);
+        WordRegisterResponseDTO response = wordService.registerWord(username, password, word);
         
         // Assert
         assertTrue(response.isSuccess());
         assertEquals("User not found", response.getMessage());
-        verify(userRepository).findByNickname(nickname);
+        verify(userRepository).findByUsername(username);
         verifyNoInteractions(wordRepository);
         verifyNoInteractions(userWordRepository);
     }
@@ -60,25 +60,25 @@ public class WordServiceTest {
     @Test
     public void testRegisterWord_NoAttemptsLeft() {
         // Arrange
-        String nickname = "testUser";
+        String username = "testUser";
         String password = "password";
         String word = "test";
         
         UserEntity user = new UserEntity();
         user.setId(1L);
-        user.setNickname(nickname);
+        user.setUsername(username);
         user.setPassword(password);
         user.setTryAttempts(0);
         
-        when(userRepository.findByNickname(nickname)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         
         // Act
-        WordRegisterResponseDTO response = wordService.registerWord(nickname, password, word);
+        WordRegisterResponseDTO response = wordService.registerWord(username, password, word);
         
         // Assert
         assertTrue(response.isSuccess());
         assertEquals("No attempts left", response.getMessage());
-        verify(userRepository).findByNickname(nickname);
+        verify(userRepository).findByUsername(username);
         verifyNoInteractions(wordRepository);
         verifyNoInteractions(userWordRepository);
     }
@@ -86,26 +86,26 @@ public class WordServiceTest {
     @Test
     public void testRegisterWord_WordNotFound() {
         // Arrange
-        String nickname = "testUser";
+        String username = "testUser";
         String password = "password";
         String word = "nonExistentWord";
         
         UserEntity user = new UserEntity();
         user.setId(1L);
-        user.setNickname(nickname);
+        user.setUsername(username);
         user.setPassword(password);
         user.setTryAttempts(3);
         
-        when(userRepository.findByNickname(nickname)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         when(wordRepository.findByWord(word)).thenReturn(null);
         
         // Act
-        WordRegisterResponseDTO response = wordService.registerWord(nickname, password, word);
+        WordRegisterResponseDTO response = wordService.registerWord(username, password, word);
         
         // Assert
         assertTrue(response.isSuccess());
         assertEquals("Word not found", response.getMessage());
-        verify(userRepository).findByNickname(nickname);
+        verify(userRepository).findByUsername(username);
         verify(wordRepository).findByWord(word);
         verify(userRepository).save(user);
         assertEquals(2, user.getTryAttempts());
@@ -115,13 +115,13 @@ public class WordServiceTest {
     @Test
     public void testRegisterWord_WordAlreadyTriedInThisAttempt() {
         // Arrange
-        String nickname = "testUser";
+        String username = "testUser";
         String password = "password";
         String word = "repeatedWord";
         
         UserEntity user = new UserEntity();
         user.setId(1L);
-        user.setNickname(nickname);
+        user.setUsername(username);
         user.setPassword(password);
         user.setTryAttempts(2);
         
@@ -131,21 +131,20 @@ public class WordServiceTest {
         UserWordEntity existingEntry = new UserWordEntity();
         existingEntry.setUser(user);
         existingEntry.setWord(wordEntity);
-        existingEntry.setId(2L);
         
-        when(userRepository.findByNickname(nickname)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         when(wordRepository.findByWord(word)).thenReturn(wordEntity);
-        when(userWordRepository.findByUserIdAndWordWordAndId(1L, word, 2L)).thenReturn(existingEntry);
+        when(userWordRepository.findByUserIdAndWordWordAndId(1L, word)).thenReturn(existingEntry);
         
         // Act
-        WordRegisterResponseDTO response = wordService.registerWord(nickname, password, word);
+        WordRegisterResponseDTO response = wordService.registerWord(username, password, word);
         
         // Assert
         assertFalse(response.isSuccess());
         assertEquals("Word already tried in this attempt", response.getMessage());
-        verify(userRepository).findByNickname(nickname);
+        verify(userRepository).findByUsername(username);
         verify(wordRepository).findByWord(word);
-        verify(userWordRepository).findByUserIdAndWordWordAndId(1L, word, 2L);
+        verify(userWordRepository).findByUserIdAndWordWordAndId(1L, word);
         verify(userRepository).save(user);
         assertEquals(1, user.getTryAttempts());
     }
@@ -153,32 +152,34 @@ public class WordServiceTest {
     @Test
     public void testRegisterWord_SuccessfulRegistration() {
         // Arrange
-        String nickname = "testUser";
+        String username = "testUser";
         String password = "password";
         String word = "validWord";
         
         UserEntity user = new UserEntity();
         user.setId(1L);
-        user.setNickname(nickname);
+        user.setUsername(username);
         user.setPassword(password);
         user.setTryAttempts(3);
         
         WordEntity wordEntity = new WordEntity();
         wordEntity.setWord(word);
         
-        when(userRepository.findByNickname(nickname)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         when(wordRepository.findByWord(word)).thenReturn(wordEntity);
-        when(userWordRepository.findByUserIdAndWordWordAndId(1L, word, 3L)).thenReturn(null);
+        when(userWordRepository.findByUserIdAndWordWordAndId(1L, word)).thenReturn(null);
         
         // Act
-        WordRegisterResponseDTO response = wordService.registerWord(nickname, password, word);
+        WordRegisterResponseDTO response = wordService.registerWord(username, password, word);
         
         // Assert
         assertTrue(response.isSuccess());
         assertEquals("Word registered successfully", response.getMessage());
-        verify(userRepository).findByNickname(nickname);
+        verify(userRepository).findByUsername(username);
         verify(wordRepository).findByWord(word);
-        verify(userWordRepository).findByUserIdAndWordWordAndId(1L, word, 3L);
+        verify(userWordRepository).findByUserIdAndWordWordAndId(1L, word);
         verify(userWordRepository).save(any(UserWordEntity.class));
+
     }
-} 
+
+}

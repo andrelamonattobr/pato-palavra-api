@@ -9,25 +9,19 @@ import java.util.List;
 @Repository
 public interface UserWordRepository extends JpaRepository<UserWordEntity, Long> {
     
-    @Query("SELECT uw.user.nickname as user, uw.id as id, COUNT(uw) as count " +
+    @Query("SELECT uw.user.username as user, COUNT(uw) as count " +
            "FROM UserWordEntity uw " +
-           "GROUP BY uw.user.nickname, uw.id " +
-           "ORDER BY count DESC")
-    List<Object[]> countWordsByUserAndId();
-    
-    @Query("SELECT uw.user.nickname as user, uw.id as id, COUNT(uw) as count " +
-           "FROM UserWordEntity uw " +
-           "GROUP BY uw.user.nickname, uw.id " +
+           "GROUP BY uw.user.username " +
            "ORDER BY count DESC " +
            "LIMIT 15")
     List<Object[]> findTop15ByPointsDesc();
     
-    @Query("SELECT uw.user.nickname as user, uw.id as id, COUNT(uw) as count " +
+    @Query("SELECT uw.user.username as user, COUNT(uw) as count " +
            "FROM UserWordEntity uw " +
-           "WHERE uw.user.nickname = ?1 " +
-           "GROUP BY uw.user.nickname, uw.id " +
+           "WHERE uw.user.username = ?1 " +
+           "GROUP BY uw.user.username " +
            "ORDER BY count DESC")
-    List<Object[]> findUserAttemptsByNickname(String nickname);
+    List<Object[]> findUserAttemptsByUsername(String username);
     
     @Query("SELECT uw FROM UserWordEntity uw WHERE uw.user.id = ?1 AND uw.word.word = ?2")
     UserWordEntity findByUserIdAndWordWordAndId(Long userId, String word);

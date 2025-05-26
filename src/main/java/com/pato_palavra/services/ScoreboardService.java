@@ -42,7 +42,7 @@ public class ScoreboardService {
         if (user.isEmpty())
             return new ScoreboardResponseModel(true, "User not found", null);
         
-        List<Object[]> results = userWordRepository.findUserAttemptsByNickname(username);
+        List<Object[]> results = userWordRepository.findUserAttemptsByUsername(username);
         List<ScoreModel> scores = new ArrayList<>();
         
         for (Object[] result : results) {

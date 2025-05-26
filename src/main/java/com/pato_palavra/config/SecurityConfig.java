@@ -57,7 +57,7 @@ public class SecurityConfig {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         daoAuthenticationProvider.setUserDetailsService(customUserDetailsService);
 
-        return new ProviderManager();
+        return new ProviderManager(daoAuthenticationProvider);
     }
 
 }

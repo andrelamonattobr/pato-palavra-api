@@ -44,6 +44,29 @@ jobs:
         name: app-jar
         path: target
         
-    - name: Deploy placeholder
-      run: |
-        echo "Deployed"
+    - name: Deploy to Server using appleboy/ssh-action
+      uses: appleboy/ssh-action@master # Or pin to a specific version like @v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT || 22 }}
+        
+        source: "target/*.jar" 
+
+        target: "${{ secrets.TARGET_DIR }}/${{ secrets.APP_JAR_NAME }}"
+        script: |
+          echo "JAR file copied to ${{ secrets.TARGET_DIR }}/${{ secrets.APP_JAR_NAME }}"
+          
+          cd ${{ secrets.TARGET_DIR }}
+          
+          sudo pkill -f 'java -jar ${{ secrets.APP_JAR_NAME }}' || echo "No process to kill or failed to kill."
+          
+          sleep 5 
+
+          echo "Starting new application: ${{ secrets.APP_JAR_NAME }}"
+
+          nohup java -jar -Dserver.port=8080 ${{ secrets.APP_JAR_NAME }} --spring.profiles.active=prod > app.log 2>&1 &
+          
+          echo "Application deployed and started. Check logs with: tail -f ${{ secrets.TARGET_DIR }}/app.log"
+          echo "To check if process is running: ps aux | grep '${{ secrets.APP_JAR_NAME }}'"

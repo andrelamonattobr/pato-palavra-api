@@ -25,9 +25,6 @@ jobs:
     
     - name: Run tests
       run: mvn test
-
-    - name: Clean build 
-      run: mvn clean package
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -35,46 +32,18 @@ jobs:
         name: app-jar
         path: target/*.jar
 
-#  deploy:
-#    needs: build
-#    runs-on: ubuntu-latest
-#    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-#    
-#    steps:
-#    - name: Download artifact
-#      uses: actions/download-artifact@v4
-#      with:
-#        name: app-jar
-#        path: target
-#        
-#    - name: Copy JAR to Server via SCP
-#      uses: appleboy/scp-action@v0.1.7 # Using a specific version
-#      with:
-#        host: ${{ secrets.SSH_HOST }}
-#        username: ${{ secrets.SSH_USERNAME }}
-#        key: ${{ secrets.SSH_PRIVATE_KEY }}
-#        port: ${{ secrets.SSH_PORT || 22 }}
-#        source: "target/*.jar" # Path to the JAR on the GitHub runner
-#        target: "${{ secrets.TARGET_DIR }}" # Destination path on the server
-#
-#    - name: Execute deployment commands on Server
-#      uses: appleboy/ssh-action@v1.0.3 # Using a specific version
-#      with:
-#        host: ${{ secrets.SSH_HOST }}
-#        username: ${{ secrets.SSH_USERNAME }}
-#        key: ${{ secrets.SSH_PRIVATE_KEY }}
-#        port: ${{ secrets.SSH_PORT || 22 }}
-#        script: |
-#          echo "1"
-#          cd ${{ secrets.TARGET_DIR }}/target
-#          
-#          echo "2"
-#          sudo pkill -f 'java -jar *.jar' || echo "No process found running with name ${{ secrets.APP_JAR_NAME }} or failed to kill."
-#          echo "3"
-#          sleep 5 
-
-          # Start the new application
-          # echo "Starting new application: ${{ secrets.APP_JAR_NAME }}"
-          # Run in background, redirect output to app.log
-          # Add any Java options or Spring profiles as needed.
-          # nohup java -jar -Dserver.port=8080 ${{ secrets.APP_JAR_NAME }} --spring.profiles.active=prod > app.log 2>&1 &
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: app-jar
+        path: target
+        
+    - name: Deploy placeholder
+      run: |
+        echo "Deployed"

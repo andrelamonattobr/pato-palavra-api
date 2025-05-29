@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Safe commit .properties ###
-**/src/main/resources/*.properties
+#**/src/main/resources/*.properties

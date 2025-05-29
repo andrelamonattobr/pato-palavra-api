@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Safe commit .properties ###
+**/src/main/resources/*.properties

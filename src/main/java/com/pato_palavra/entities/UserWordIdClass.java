@@ -5,13 +5,15 @@ import java.io.Serializable;
 public class UserWordIdClass implements Serializable {
     private Long user;
     private String word;
+    private Long id;
 
     public UserWordIdClass() {
     }
 
-    public UserWordIdClass(Long user, String word) {
+    public UserWordIdClass(Long user, String word, Long id) {
         this.user = user;
         this.word = word;
+        this.id = id;
     }
 
     public Long getUser() {
@@ -30,6 +32,14 @@ public class UserWordIdClass implements Serializable {
         this.word = word;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -37,13 +47,14 @@ public class UserWordIdClass implements Serializable {
 
         UserWordIdClass that = (UserWordIdClass) o;
 
-        return (user.equals(that.user) && word.equals(that.word));
+        return (user.equals(that.user) && word.equals(that.word) && id.equals(that.id));
     }
 
     @Override
     public int hashCode() {
         int result = user.hashCode();
         result = 31 * result + word.hashCode();
+        result = 31 * result + id.hashCode();
         return result;
     }
 

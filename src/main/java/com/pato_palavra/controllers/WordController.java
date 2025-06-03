@@ -21,8 +21,8 @@ public class WordController {
     private ContextService contextService;
 
     @PostMapping("/register")
-    public ResponseEntity<WordRegisterResponseModel> registerWord(@RequestBody String word) {
-        WordRegisterResponseModel response = wordService.registerWord(contextService.getCurrentUsername(), word);
+    public ResponseEntity<WordRegisterResponseModel> registerWord(@RequestBody innerRequestBody requestBody) {
+        WordRegisterResponseModel response = wordService.registerWord(contextService.getCurrentUsername(), requestBody.getWord());
 
         if (response.isSuccess())
             return ResponseEntity.ok(response);
@@ -32,4 +32,23 @@ public class WordController {
     }
 
 
+}
+
+class innerRequestBody{
+    private String word;
+
+    public innerRequestBody() {
+    }
+
+    public innerRequestBody(String word) {
+        this.word = word;
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public void setWord(String word) {
+        this.word = word;
+    }
 }

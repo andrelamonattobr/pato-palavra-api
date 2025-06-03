@@ -32,7 +32,7 @@ public class ScoreboardService {
                     (Long) result[2]
             ));
         }
-        
+
         return new ScoreboardResponseModel(true, "General scoreboard retrieved successfully", scores);
     }
     
@@ -52,7 +52,7 @@ public class ScoreboardService {
                     (Long) result[2]
             ));
         }
-        
+
         return new ScoreboardResponseModel(true, "Personal scoreboard retrieved successfully", scores);
 
     }

@@ -1,6 +1,7 @@
 package com.pato_palavra.services;
 
 import com.pato_palavra.models.WordRegisterResponseModel;
+import com.sun.tools.jconsole.JConsoleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.pato_palavra.entities.UserEntity;
@@ -42,8 +43,9 @@ public class WordService {
         
         Long userId = user.get().getId();
         String wordStr = wordEntity.getWord();
+        Long idValue = user.get().getTryAttempts().longValue();
 
-        UserWordEntity existingAttemptEntry = userWordRepository.findByUserIdAndWordWordAndId(userId, wordStr);
+        UserWordEntity existingAttemptEntry = userWordRepository.findByUserIdAndWordWordAndId(userId, wordStr, idValue);
         if (existingAttemptEntry != null) {
             decreaseUserAttempt(user.get());
             return new WordRegisterResponseModel(false, "Word already tried in this attempt");
@@ -52,6 +54,7 @@ public class WordService {
         UserWordEntity userWord = new UserWordEntity();
         userWord.setUser(user.get());
         userWord.setWord(wordEntity);
+        userWord.setId(idValue);
         userWordRepository.save(userWord);
         return new WordRegisterResponseModel(true, "Word registered successfully");
 

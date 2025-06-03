@@ -1,14 +1,22 @@
+# === Build Stage ===
+FROM maven:3.9.9-eclipse-temurin-24 AS build
 
-FROM openjdk:24-jdk-slim as builder
-WORKDIR /opt/app
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:go-offline
-COPY ./src ./src
-RUN ./mvnw clean install -DskipTests
+WORKDIR /app
 
+# Copy pom and source code
+COPY pom.xml .
+COPY src ./src
+
+# Build the application
+RUN mvn clean package -DskipTests
+
+# === Runtime Stage ===
 FROM openjdk:24-jdk-slim
-WORKDIR /opt/app
-EXPOSE 8080
-COPY --from=builder /opt/app/target/*.jar /opt/app/*.jar
-ENTRYPOINT ["java" "-jar", "/opt/app/*.jar" ]
+
+WORKDIR /app
+
+# Copy the jar from the build stage
+COPY --from=build /app/target/pato-palavra-0.0.1-SNAPSHOT.jar app.jar
+
+# Run the app
+ENTRYPOINT ["java", "-jar", "app.jar"]

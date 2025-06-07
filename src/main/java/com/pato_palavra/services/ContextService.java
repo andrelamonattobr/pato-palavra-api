@@ -2,8 +2,11 @@ package com.pato_palavra.services;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class ContextService {
@@ -14,9 +17,17 @@ public class ContextService {
         if (authentication == null || !authentication.isAuthenticated())
             throw new RuntimeException("Unauthenticated user");
 
+        String username = "";
         Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else {
+            System.out.println("Not found user or optional");
+        }
 
-        return ((UserDetails) principal).getUsername();
+        authentication.getPrincipal();
+
+        return username;
 
     }
 

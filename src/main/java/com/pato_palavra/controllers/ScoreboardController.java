@@ -25,7 +25,8 @@ public class ScoreboardController {
     
     @PostMapping("/personal")
     public ResponseEntity<ScoreboardResponseModel> getPersonalScoreboard() {
-        ScoreboardResponseModel response = scoreboardService.getPersonalScoreboard(contextService.getCurrentUsername());
+        String user = contextService.getCurrentUsername();
+        ScoreboardResponseModel response = scoreboardService.getPersonalScoreboard(user);
         
         if (response.isSuccess())
             return ResponseEntity.ok(response);

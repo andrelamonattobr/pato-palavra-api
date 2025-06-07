@@ -14,7 +14,7 @@ import com.pato_palavra.services.WordService;
 @RestController
 @RequestMapping("/api/words")
 public class WordController {
-    
+
     @Autowired
     private WordService wordService;
 

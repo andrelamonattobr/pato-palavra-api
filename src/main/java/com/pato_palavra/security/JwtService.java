@@ -27,7 +27,12 @@ public class JwtService {
     private long refreshExpiration;
     
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (Exception e) {
+            System.out.println("JwtService.extractUsername Error: " + e.getMessage());
+            return null;
+        }
     }
     
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

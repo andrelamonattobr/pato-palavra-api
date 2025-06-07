@@ -30,15 +30,15 @@ public class WordService {
         Optional<UserEntity> user = userRepository.findByUsername(username);
         
         if (user.isEmpty())
-            return new WordRegisterResponseModel(true, "User not found");
+            return new WordRegisterResponseModel(false, "User not found");
 
         if (user.get().getTryAttempts() <= 0)
-            return new WordRegisterResponseModel(true, "No attempts left");
+            return new WordRegisterResponseModel(false, "No attempts left");
 
         WordEntity wordEntity = wordRepository.findByWord(word);
         if (wordEntity == null) {
             decreaseUserAttempt(user.get());
-            return new WordRegisterResponseModel(true, "Word not found");
+            return new WordRegisterResponseModel(false, "Word not found");
         }
         
         Long userId = user.get().getId();

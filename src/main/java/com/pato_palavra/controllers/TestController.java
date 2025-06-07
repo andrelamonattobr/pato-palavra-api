@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
     @GetMapping("")
-    public ResponseEntity<Void> testRoute(){
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> testRoute(){
+        return ResponseEntity.ok("Ta funcionando");
     }
 
 }

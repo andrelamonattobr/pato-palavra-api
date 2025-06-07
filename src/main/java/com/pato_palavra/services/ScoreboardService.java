@@ -40,7 +40,7 @@ public class ScoreboardService {
         Optional<UserEntity> user = userRepository.findByUsername(username);
         
         if (user.isEmpty())
-            return new ScoreboardResponseModel(true, "User not found", null);
+            return new ScoreboardResponseModel(false, "User not found", new ArrayList<>());
         
         List<Object[]> results = userWordRepository.findUserAttemptsByUsername(username);
         List<ScoreModel> scores = new ArrayList<>();

@@ -21,17 +21,30 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseModel> register(@RequestBody AuthRequestModel request) {
-        return ResponseEntity.ok(authService.register(request));
+        try {
+            return ResponseEntity.ok(authService.register(request));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseModel> authenticate(@RequestBody AuthRequestModel request) {
-        return ResponseEntity.ok(authService.authenticate(request));
+        try {
+            return ResponseEntity.ok(authService.authenticate(request));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping("/refresh-token")
     public ResponseEntity<AuthResponseModel> refreshToken(@RequestBody RefreshTokenRequestModel request) {
-        return ResponseEntity.ok(authService.refreshToken(request));
+        try {
+            return ResponseEntity.ok(authService.refreshToken(request));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 } 

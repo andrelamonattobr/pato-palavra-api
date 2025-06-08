@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 public class ContextService {
 
-    public String getCurrentUsername(){
+    public String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated())
@@ -21,7 +21,12 @@ public class ContextService {
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserDetails) {
             username = ((UserDetails) principal).getUsername();
-        } else {
+        } else if (principal instanceof Optional<?>) {
+            if (((Optional<?>) principal).isPresent() && ((Optional<?>) principal).get() instanceof UserDetails)
+                username = ((UserDetails) ((Optional<?>) principal).get()).getUsername();
+            else
+                System.out.println("Not found user or optional");
+        }else {
             System.out.println("Not found user or optional");
         }
 
